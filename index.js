@@ -1,16 +1,13 @@
-// index.js
-console.log('[SNIPER] service started');
-
-// Railway o‘chirmasligi uchun kichik server
 const http = require('http');
 
+const PORT = process.env.PORT || 3000;
+
 const server = http.createServer((req, res) => {
-  res.writeHead(200);
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('OK');
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
+  console.log('[SNIPER] service started');
   console.log('[SNIPER] listening on port', PORT);
 });
-
