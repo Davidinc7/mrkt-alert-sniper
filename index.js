@@ -1,3 +1,5 @@
+console.log("BOT_TOKEN:", !!process.env.BOT_TOKEN);
+console.log("CHAT_ID:", !!process.env.CHAT_ID);
 const https = require("https");
 
 console.log("mrkt-alert-sniper started");
