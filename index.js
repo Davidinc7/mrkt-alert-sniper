@@ -1,57 +1,30 @@
-console.log("BOT_TOKEN:", !!process.env.BOT_TOKEN);
-console.log("CHAT_ID:", !!process.env.CHAT_ID);
-const https = require("https");
+import http from "http";
+
+const PORT = process.env.PORT || 3000;
 
 console.log("mrkt-alert-sniper started");
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
+// --- HTTP SERVER (Railway uchun MUHIM) ---
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("MRKT ALERT BOT IS RUNNING\n");
+});
 
-function sendTelegram(text) {
-  if (!BOT_TOKEN || !CHAT_ID) {
-    console.log("Telegram ENV missing");
-    return;
-  }
+server.listen(PORT, () => {
+  console.log("HTTP server listening on port", PORT);
+});
 
-  const data = JSON.stringify({
-    chat_id: CHAT_ID,
-    text: text,
-  });
+// --- ENV CHECK ---
+console.log("BOT_TOKEN:", !!process.env.BOT_TOKEN);
+console.log("CHAT_ID:", !!process.env.CHAT_ID);
 
-  const options = {
-    hostname: "api.telegram.org",
-    path: `/bot${BOT_TOKEN}/sendMessage`,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(data),
-    },
-  };
-
-  const req = https.request(options, (res) => {
-    res.on("data", () => {});
-  });
-
-  req.on("error", (err) => {
-    console.log("Telegram error:", err.message);
-  });
-
-  req.write(data);
-  req.end();
-}
-
-// BOT START TEST
-sendTelegram("✅ MRKT ALERT BOT IS ONLINE");
-
-// heartbeat
+// --- HEARTBEAT ---
 setInterval(() => {
   console.log("heartbeat:", new Date().toISOString());
 }, 15000);
 
-// test alert
+// --- FAKE ALERT TEST ---
 setInterval(() => {
   const price = (Math.random() * 5 + 1).toFixed(2);
-  const msg = `🚨 MRKT ALERT\nPossible misprice detected → ${price} TON`;
-  console.log(msg);
-  sendTelegram(msg);
+  console.log("ALERT: Possible misprice detected →", price, "TON");
 }, 30000);
