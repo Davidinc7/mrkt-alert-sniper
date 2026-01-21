@@ -1,4 +1,4 @@
-import https from "https";
+const https = require("https");
 
 console.log("mrkt-alert-sniper started");
 
@@ -22,7 +22,7 @@ function sendTelegram(text) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Content-Length": data.length,
+      "Content-Length": Buffer.byteLength(data),
     },
   };
 
@@ -38,15 +38,15 @@ function sendTelegram(text) {
   req.end();
 }
 
-// TEST: startda 1 marta yuborsin
+// BOT START TEST
 sendTelegram("✅ MRKT ALERT BOT IS ONLINE");
 
-// Heartbeat
+// heartbeat
 setInterval(() => {
   console.log("heartbeat:", new Date().toISOString());
 }, 15000);
 
-// Test alert
+// test alert
 setInterval(() => {
   const price = (Math.random() * 5 + 1).toFixed(2);
   const msg = `🚨 MRKT ALERT\nPossible misprice detected → ${price} TON`;
