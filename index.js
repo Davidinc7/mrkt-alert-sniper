@@ -1,42 +1,55 @@
+import https from "https";
+
 console.log("mrkt-alert-sniper started");
 
-// ENV dan o‘qiymiz
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
-// Telegram yuborish funksiyasi
-async function sendTelegram(text) {
+function sendTelegram(text) {
   if (!BOT_TOKEN || !CHAT_ID) {
     console.log("Telegram ENV missing");
     return;
   }
 
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+  const data = JSON.stringify({
+    chat_id: CHAT_ID,
+    text: text,
+  });
 
-  try {
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text: text,
-      }),
-    });
-  } catch (err) {
-    console.log("Telegram send error:", err.message);
-  }
+  const options = {
+    hostname: "api.telegram.org",
+    path: `/bot${BOT_TOKEN}/sendMessage`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Length": data.length,
+    },
+  };
+
+  const req = https.request(options, (res) => {
+    res.on("data", () => {});
+  });
+
+  req.on("error", (err) => {
+    console.log("Telegram error:", err.message);
+  });
+
+  req.write(data);
+  req.end();
 }
+
+// TEST: startda 1 marta yuborsin
+sendTelegram("✅ MRKT ALERT BOT IS ONLINE");
 
 // Heartbeat
 setInterval(() => {
   console.log("heartbeat:", new Date().toISOString());
 }, 15000);
 
-// FAKE ALERT TEST (hozircha test)
+// Test alert
 setInterval(() => {
   const price = (Math.random() * 5 + 1).toFixed(2);
   const msg = `🚨 MRKT ALERT\nPossible misprice detected → ${price} TON`;
-
   console.log(msg);
   sendTelegram(msg);
 }, 30000);
