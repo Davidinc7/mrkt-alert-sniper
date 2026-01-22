@@ -1,9 +1,16 @@
-console.log("BOOT OK");
+const TG_TOKEN = process.env.TG_TOKEN;
+const TG_CHAT_ID = process.env.TG_CHAT_ID;
 
-async function test() {
-  const res = await fetch(`https://api.telegram.org/bot${process.env.TG_TOKEN}/getMe`);
-  const data = await res.json();
-  console.log("GET ME RESULT:", data);
-}
+console.log("BOOT OK - SEND TEST");
 
-test();
+fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    chat_id: TG_CHAT_ID,
+    text: "✅ TEST MESSAGE FROM RAILWAY"
+  })
+})
+.then(r => r.json())
+.then(d => console.log("TG RESPONSE:", d))
+.catch(e => console.error("TG ERROR:", e));
