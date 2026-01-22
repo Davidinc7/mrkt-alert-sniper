@@ -1,5 +1,3 @@
-const fetch = require("node-fetch");
-
 const TG_TOKEN = process.env.TG_TOKEN;
 const TG_CHAT_ID = process.env.TG_CHAT_ID;
 
@@ -22,4 +20,4 @@ async function sendTelegram(text) {
   console.log("TG RESPONSE:", data);
 }
 
-sendTelegram("TEST MESSAGE FROM RAILWAY");
+sendTelegram("✅ TEST MESSAGE FROM RAILWAY (NO node-fetch)");
