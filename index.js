@@ -3,12 +3,8 @@ const https = require("https");
 const TG_TOKEN = process.env.TG_TOKEN;
 const TG_CHAT_ID = process.env.TG_CHAT_ID;
 
-if (!TG_TOKEN || !TG_CHAT_ID) {
-  console.error("TG_TOKEN yoki TG_CHAT_ID topilmadi");
-  process.exit(1);
-}
-
 console.log("mrkt-alert-sniper started");
+console.log("ENV CHECK:", TG_TOKEN ? "OK" : "NO TOKEN", TG_CHAT_ID ? "OK" : "NO CHAT ID");
 
 function sendTelegram(text) {
   const data = JSON.stringify({
@@ -22,33 +18,31 @@ function sendTelegram(text) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(data)
+      "Content-Length": data.length
     }
   };
 
   const req = https.request(options, res => {
-    res.on("data", () => {});
+    res.on("data", d => {});
   });
 
-  req.on("error", err => {
-    console.error("Telegram error:", err.message);
+  req.on("error", error => {
+    console.error("TG ERROR:", error);
   });
 
   req.write(data);
   req.end();
 }
 
-// HEARTBEAT
+// heartbeat
 setInterval(() => {
   console.log("heartbeat:", new Date().toISOString());
 }, 15000);
 
-// ALERT TEST
+// TEST ALERT
 setInterval(() => {
   const price = (Math.random() * 5 + 1).toFixed(2);
-  const msg = `🚨 MRKT ALERT\nPossible misprice → ${price} TON`;
+  const msg = `🚨 ALERT\nPossible misprice detected\nPrice: ${price} TON`;
   console.log(msg);
   sendTelegram(msg);
 }, 30000);
-console.log("ENV CHECK:", TG_TOKEN, TG_CHAT_ID);
-console.log("mrkt-alert-sniper started");
