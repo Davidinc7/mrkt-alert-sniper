@@ -11,7 +11,7 @@ function sendTelegram(text) {
 
   const options = {
     hostname: "api.telegram.org",
-    path: /bot${TG_TOKEN}/sendMessage,
+    path: "/bot" + TG_TOKEN + "/sendMessage",
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -39,7 +39,7 @@ setInterval(() => {
 
 setInterval(() => {
   const price = (Math.random() * 5 + 1).toFixed(2);
-  const msg = 🚨 ALERT: Possible misprice → ${price} TON;
+  const msg = "🚨 ALERT: Possible misprice → " + price + " TON";
   console.log(msg);
   sendTelegram(msg);
 }, 30000);
