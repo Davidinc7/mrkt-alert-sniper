@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+const fetch = require("node-fetch");
 
 const TG_TOKEN = process.env.TG_TOKEN;
 const TG_CHAT_ID = process.env.TG_CHAT_ID;
@@ -13,7 +13,7 @@ async function sendTelegram(text) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       chat_id: TG_CHAT_ID,
-      text
+      text: text
     })
   });
 
