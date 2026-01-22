@@ -8,8 +8,6 @@ if (!TG_TOKEN || !TG_CHAT_ID) {
   process.exit(1);
 }
 
-console.log("mrkt-alert-sniper started");
-
 function sendTelegram(text) {
   const data = JSON.stringify({
     chat_id: TG_CHAT_ID,
@@ -18,35 +16,41 @@ function sendTelegram(text) {
 
   const options = {
     hostname: "api.telegram.org",
-    path: `/bot${TG_TOKEN}/sendMessage`,
+    path: /bot${TG_TOKEN}/sendMessage,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Content-Length": data.length,
+      "Content-Length": Buffer.byteLength(data),
     },
   };
 
   const req = https.request(options, (res) => {
-    res.on("data", () => {});
+    let body = "";
+    res.on("data", (chunk) => (body += chunk));
+    res.on("end", () => {
+      console.log("TG RESPONSE:", body);
+    });
   });
 
-  req.on("error", (e) => {
-    console.error("TG ERROR:", e.message);
+  req.on("error", (err) => {
+    console.error("TG ERROR:", err.message);
   });
 
   req.write(data);
   req.end();
 }
 
-// heartbeat
+console.log("mrkt-alert-sniper started");
+
+// heartbeat – Railway o‘chirmasligi uchun
 setInterval(() => {
   console.log("heartbeat:", new Date().toISOString());
 }, 15000);
 
-// TEST ALERT (har 30s)
+// ALERT SIMULYATSIYA (TEST)
 setInterval(() => {
   const price = (Math.random() * 5 + 1).toFixed(2);
-  const msg = `🚨 ALERT: Possible misprice → ${price} TON`;
+  const msg = 🚨 ALERT: Possible misprice → ${price} TON;
   console.log(msg);
   sendTelegram(msg);
 }, 30000);
