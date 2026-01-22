@@ -1,4 +1,4 @@
-import https from "https";
+const https = require("https");
 
 console.log("mrkt-alert-sniper started");
 
@@ -13,38 +13,37 @@ if (!TG_TOKEN || !TG_CHAT_ID) {
 function sendTelegram(text) {
   const data = JSON.stringify({
     chat_id: TG_CHAT_ID,
-    text,
+    text: text,
   });
 
-  const req = https.request(
-    {
-      hostname: "api.telegram.org",
-      path: `/bot${TG_TOKEN}/sendMessage`,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(data),
-      },
+  const options = {
+    hostname: "api.telegram.org",
+    path: `/bot${TG_TOKEN}/sendMessage`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Length": data.length,
     },
-    (res) => {
-      res.on("data", () => {});
-    }
-  );
+  };
 
-  req.on("error", (err) => {
-    console.error("Telegram error:", err.message);
+  const req = https.request(options, (res) => {
+    res.on("data", () => {});
+  });
+
+  req.on("error", (e) => {
+    console.error("Telegram error:", e.message);
   });
 
   req.write(data);
   req.end();
 }
 
-/* ===== HEARTBEAT ===== */
+/* HEARTBEAT — crash bo‘lmasligi uchun */
 setInterval(() => {
   console.log("heartbeat:", new Date().toISOString());
 }, 15000);
 
-/* ===== TEST ALERT (1 marta) ===== */
+/* TEST MESSAGE — 1 marta */
 setTimeout(() => {
-  sendTelegram("✅ MRKT ALERT BOT ONLINE\nMonitoring ACTIVE gifts only.");
+  sendTelegram("✅ MRKT ALERT BOT ONLINE (CommonJS mode)");
 }, 5000);
