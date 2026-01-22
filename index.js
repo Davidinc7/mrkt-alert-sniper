@@ -11,11 +11,11 @@ function sendTelegram(text) {
 
   const options = {
     hostname: "api.telegram.org",
-    path: "/bot" + TG_TOKEN + "/sendMessage",
+    path: `/bot${TG_TOKEN}/sendMessage`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(data),
+      "Content-Length": data.length,
     },
   };
 
@@ -23,8 +23,8 @@ function sendTelegram(text) {
     res.on("data", () => {});
   });
 
-  req.on("error", (err) => {
-    console.error("TG ERROR:", err.message);
+  req.on("error", (e) => {
+    console.error("TG error:", e.message);
   });
 
   req.write(data);
@@ -37,9 +37,8 @@ setInterval(() => {
   console.log("heartbeat:", new Date().toISOString());
 }, 15000);
 
+// === MRKT FEED CHECK (PLACEHOLDER) ===
 setInterval(() => {
-  const price = (Math.random() * 5 + 1).toFixed(2);
-  const msg = "🚨 ALERT: Possible misprice → " + price + " TON";
-  console.log(msg);
-  sendTelegram(msg);
-}, 30000);
+  // BU YERDA KEYINGI BOSQICHDA REAL MRKT API QO‘YAMIZ
+  console.log("Checking Mrkt live feed...");
+}, 10000);
