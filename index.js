@@ -1,10 +1,10 @@
-import https from "https";
+const https = require("https");
 
 const TG_TOKEN = process.env.TG_TOKEN;
 const TG_CHAT_ID = process.env.TG_CHAT_ID;
 
 if (!TG_TOKEN || !TG_CHAT_ID) {
-  console.error("TG_TOKEN yoki TG_CHAT_ID yo‘q");
+  console.error("TG_TOKEN yoki TG_CHAT_ID topilmadi");
   process.exit(1);
 }
 
@@ -22,11 +22,18 @@ function sendTelegram(text) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Content-Length": data.length
+      "Content-Length": Buffer.byteLength(data)
     }
   };
 
-  const req = https.request(options);
+  const req = https.request(options, res => {
+    res.on("data", () => {});
+  });
+
+  req.on("error", err => {
+    console.error("Telegram error:", err.message);
+  });
+
   req.write(data);
   req.end();
 }
@@ -36,7 +43,7 @@ setInterval(() => {
   console.log("heartbeat:", new Date().toISOString());
 }, 15000);
 
-// ALERT
+// ALERT TEST
 setInterval(() => {
   const price = (Math.random() * 5 + 1).toFixed(2);
   const msg = `🚨 MRKT ALERT\nPossible misprice → ${price} TON`;
