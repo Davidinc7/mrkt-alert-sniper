@@ -1,32 +1,25 @@
+import fetch from "node-fetch";
+
+const TG_TOKEN = process.env.TG_TOKEN;
+const TG_CHAT_ID = process.env.TG_CHAT_ID;
+
 console.log("BOOT OK - TELEGRAM TEST STARTED");
-sendTelegram("TEST MESSAGE FROM RAILWAY");
-function sendTelegram(text) {
-  const data = JSON.stringify({
-    chat_id: TG_CHAT_ID,
-    text
-  });
 
-  const options = {
-    hostname: "api.telegram.org",
-    path: `/bot${TG_TOKEN}/sendMessage`,
+async function sendTelegram(text) {
+  const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`;
+
+  const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
-
-  const req = https.request(options, res => {
-    console.log("TG STATUS:", res.statusCode);
-
-    res.on("data", d => {
-      console.log("TG RESPONSE:", d.toString());
-    });
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: TG_CHAT_ID,
+      text
+    })
   });
 
-  req.on("error", err => {
-    console.error("TG ERROR:", err);
-  });
-
-  req.write(data);
-  req.end();
+  const data = await res.text();
+  console.log("TG STATUS:", res.status);
+  console.log("TG RESPONSE:", data);
 }
+
+sendTelegram("TEST MESSAGE FROM RAILWAY");
