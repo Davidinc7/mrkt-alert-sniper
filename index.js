@@ -50,3 +50,5 @@ setInterval(() => {
   console.log(msg);
   sendTelegram(msg);
 }, 30000);
+console.log("ENV CHECK:", TG_TOKEN, TG_CHAT_ID);
+console.log("mrkt-alert-sniper started");
