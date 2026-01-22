@@ -1,3 +1,5 @@
+console.log("BOOT OK - TELEGRAM TEST STARTED");
+sendTelegram("TEST MESSAGE FROM RAILWAY");
 function sendTelegram(text) {
   const data = JSON.stringify({
     chat_id: TG_CHAT_ID,
