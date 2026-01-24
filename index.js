@@ -1,22 +1,23 @@
-// Node 18+ da fetch avtomatik mavjud
-
+// Node 18+ da fetch BOR
 const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHAT_IDS = process.env.CHAT_IDS.split(",");
+const CHAT_IDS = (process.env.CHAT_IDS || "").split(",").filter(Boolean);
 
-// MRKT feed endpoint (mini‑app backend)
-const FEED_URL = "https://tgmrkt.io/api/gifts/feed";
+if (!BOT_TOKEN) {
+  console.error("❌ BOT_TOKEN yo‘q");
+  process.exit(1);
+}
+if (CHAT_IDS.length === 0) {
+  console.error("❌ CHAT_IDS yo‘q");
+  process.exit(1);
+}
 
-let seen = new Set();
-
-async function sendTG(text) {
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-
+async function send(text) {
   for (const chatId of CHAT_IDS) {
-    await fetch(url, {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        chat_id: chatId.trim(),
+        chat_id: chatId,
         text,
         disable_web_page_preview: true
       })
@@ -24,44 +25,7 @@ async function sendTG(text) {
   }
 }
 
-async function pollFeed() {
-  try {
-    const res = await fetch(FEED_URL, { cache: "no-store" });
-    if (!res.ok) return;
-
-    const data = await res.json();
-    if (!Array.isArray(data.items)) return;
-
-    for (const g of data.items) {
-      // ❌ pre‑marketni o‘tkazib yuboramiz
-      if (g.is_premarket || g.is_premarket_sale) continue;
-      if (g.status !== "ACTIVE") continue;
-      if (seen.has(g.id)) continue;
-
-      seen.add(g.id);
-
-      // floor bilan solishtiramiz
-      if (g.floor_price && g.price < g.floor_price * 0.75) {
-        const discount = Math.round(
-          100 - (g.price / g.floor_price) * 100
-        );
-
-        await sendTG(
-          `⚡️ ARZON GIFT\n` +
-          `🎁 ${g.title || g.name}\n` +
-          `🆔 #${g.id}\n` +
-          `💰 ${g.price} TON\n` +
-          `📉 Floor: ${g.floor_price} TON\n` +
-          `🔥 -${discount}%\n` +
-          `🔗 https://t.me/mrkt`
-        );
-      }
-    }
-  } catch (e) {
-    console.error("FEED ERROR", e.message);
-  }
-}
-
-console.log("🚀 MRKT REAL FEED SNIPER ISHLADI");
-
-setInterval(pollFeed, 400); // 0.4s — tez, lekin o‘lmaydi
+(async () => {
+  console.log("✅ BOT ISHGA TUSHDI");
+  await send("✅ Mrkt sniper backend LIVE. Keyingi bosqich: FEED ulanadi.");
+})();
