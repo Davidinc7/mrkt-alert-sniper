@@ -1,12 +1,11 @@
 {
   "name": "mrkt-alert-sniper",
   "version": "1.0.0",
-  "private": true,
-  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
   "scripts": {
     "start": "node index.js"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }
